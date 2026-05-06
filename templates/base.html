@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/front_page.css' %}">
+    <meta charset="UTF-8">
+    <title>ArtVault</title>
+</head>
+<body>
+
+    {% include "partials/navbar.html" %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include "partials/footer.html" %}
+
+</body>
+</html>
+
