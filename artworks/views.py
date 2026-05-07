@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import ArtworkForm
@@ -80,7 +81,30 @@ def add_artwork(request):
     else:
         form = ArtworkForm()
 
-    return render(request, "artworks/artworks_form.html", {"form": form})
+    return render(request, "artworks/artworks_form.html", {"form": form, "form_title": "Add Artwork", "button_text": "Add Artwork"})
+
+
+@login_required
+def edit_artwork(request, pk):
+    artwork = get_object_or_404(Artwork, pk=pk)
+
+    if not hasattr(request.user, "seller") or artwork.seller != request.user.seller:
+        return HttpResponseForbidden("You cannot edit this artwork.")
+
+    if request.method == "POST":
+        form = ArtworkForm(request.POST, request.FILES, instance=artwork)
+        if form.is_valid():
+            form.save()
+            return redirect("artwork_detail", pk=artwork.pk)
+    else:
+        form = ArtworkForm(instance=artwork)
+
+    return render(request, "artworks/artworks_form.html", {
+        "form": form,
+        "form_title": "Edit Artwork",
+        "button_text": "Save Changes",
+        "artwork": artwork,
+    })
 
 
 def category_list(request):
